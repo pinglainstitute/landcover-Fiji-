@@ -1,0 +1,84 @@
+var Nadi = ee.Geometry.Rectangle([177.36, -17.87, 177.58, -17.66]);
+
+Map.centerObject(Nadi, 10);
+
+function maskL8sr(image) {
+  // Bits 3 and 5 are cloud shadow and cloud, respectively.
+  var cloudShadowBitMask = 1 << 3;
+  var cloudsBitMask = 1 << 5;
+  // Get the pixel QA band.
+  var qa = image.select('QA_PIXEL');
+  // Both flags should be set to zero, indicating clear conditions.
+  var mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0)
+      .and(qa.bitwiseAnd(cloudsBitMask).eq(0));
+  // Return the masked image, scaled to reflectance, without the QA bands.
+  return image.updateMask(mask).divide(10000)
+      .select("SR_B[0-9]*")
+      .copyProperties(image, ["system:time_start"]);
+}
+
+// Working on 2013
+var collection = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
+    .filterDate('2013-09-01','2014-09-01')
+    .map(maskL8sr)
+    .filterBounds(Nadi)
+    .median()
+    .clip(Nadi);
+
+
+
+var NDBI= collection.normalizedDifference(['B6','B5']).rename('NDBI');
+
+
+var green=collection.select('SR_B3');
+var red = collection.select('SR_B4');
+var nir = collection.select('SR_B5');
+var swir= collection.select('SR_B6');
+
+var ndvi = nir.subtract(red).divide(nir.add(red));
+
+var ndwi = green.subtract(nir).divide(green.add(nir));
+
+var ndbi = swir.subtract(nir).divide(swir.add(nir));
+
+
+var new2013 = collection
+.select(['SR_B1','SR_B2','SR_B3','SR_B4','SR_B5','SR_B6','SR_B7'])
+.addBands(ndvi)
+.addBands(ndwi)
+.addBands(ndbi);
+
+
+Map.addLayer(new2013, {bands: ['SR_B4', 'SR_B3', 'SR_B2'], min: 0, max: 3000}, '2013')
+
+
+//Sample pixels from the image (no label needed for unsupervised clustering)
+var training = new2013.sample({
+  region: Nadi,
+  scale: 30,
+  numPixels: 5000,  // limit for clustering
+  seed: 42
+});
+
+//Create and train the clusterer
+var clusterer = ee.Clusterer.wekaCascadeKMeans(7, 8, 5).train({
+  features: training
+});
+
+//Classify the image using the trained clusterer
+var clustered = new2013.cluster(clusterer);
+
+//Visualize the result
+Map.addLayer(clustered, {min: 0, max: 6, palette: ['#FF0000', '#1B5E20', '#0000FF', '#FFF9C4', '#FFFF00', '#B9F6CA', '#757575']}, 'Clustered 2013');
+
+
+
+//Export as GeoTIFF
+Export.image.toDrive({
+  image: clustered,
+  description: 'Label_2013_Nadi_Kmeans',
+  scale: 30,
+  region:Nadi,
+  crs: 'EPSG:4326',
+  maxPixels: 1e13
+});
