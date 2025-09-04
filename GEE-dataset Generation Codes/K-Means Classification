@@ -37,7 +37,7 @@ var swir= collection.select('SR_B6');
 
 var ndvi = nir.subtract(red).divide(nir.add(red));
 
-var ndwi = green.subtract(nir).divide(green.add(nir));
+var mndwi = green.subtract(swir).divide(green.add(swir));
 
 var ndbi = swir.subtract(nir).divide(swir.add(nir));
 
@@ -45,7 +45,7 @@ var ndbi = swir.subtract(nir).divide(swir.add(nir));
 var new2013 = collection
 .select(['SR_B1','SR_B2','SR_B3','SR_B4','SR_B5','SR_B6','SR_B7'])
 .addBands(ndvi)
-.addBands(ndwi)
+.addBands(mndwi)
 .addBands(ndbi);
 
 
