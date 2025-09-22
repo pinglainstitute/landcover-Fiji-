@@ -14,7 +14,7 @@ def predict_land_cover(feature_arr, extent, year):
     """
     # print(f"Loading model from: {model_path}")
     RESULTS_DIR = 'results'
-    model = load_model(os.path.join(RESULTS_DIR, 'best_land_cover_model.h5'))
+    model = load_model(os.path.join(RESULTS_DIR, 'training' , 'best_land_cover_model_cnn.keras'))
     
     # print(f"Reading input image: {input_image_path}")
     n_class_pos = 7
@@ -25,6 +25,14 @@ def predict_land_cover(feature_arr, extent, year):
 
     NAME = 'classified_'+ str(year) + '.png'
 
+    VECTOR_DIR = os.path.join(RESULTS_DIR, 'vector_files')
+    os.makedirs(VECTOR_DIR, exist_ok=True)
+    NPNAME = 'classified_'+ str(year) + '.npy'
+    np.save(os.path.join(VECTOR_DIR, NPNAME), predicted_labels)
+
+
+    PRED_DIR = os.path.join(RESULTS_DIR, 'prediction')
+    os.makedirs(PRED_DIR, exist_ok=True)
     plot_Classified_img(predicted_labels, extent, n_class_pos, os.path.join(RESULTS_DIR, NAME))
 
     
@@ -33,7 +41,7 @@ def predict_land_cover(feature_arr, extent, year):
 
 
 if __name__ == "__main__":
-    for i in range(2013,2025):
+    for i in range(2013,2024):
         year = str(i)
         feature_arr, extent = load('/data/'+year+'_original.tif')
 

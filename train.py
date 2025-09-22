@@ -16,7 +16,7 @@ from plotting import plot_training_history, plot_confusion_matrix, plot_roc_curv
 # File paths
 FEATURE_FILE = '/data/2013_original.tif'
 LABEL_FILE = '/data/Label_2013_Nadi_1750_samples.tif'
-RESULTS_DIR = 'results'
+RESULTS_DIR = 'results/training'
 
 # Model & Training parameters
 N_SPLITS = 10
@@ -134,7 +134,7 @@ def main():
 
         if args.model in ['cnn', 'ann']:
             # Save Keras model
-            model_save_path = os.path.join(RESULTS_DIR, f'best_land_cover_model_{args.model}.h5')
+            model_save_path = os.path.join(RESULTS_DIR, f'best_land_cover_model_{args.model}.keras')
             best_model.save(model_save_path)
             print(f"Best model saved to {model_save_path}")
 
