@@ -213,7 +213,7 @@ def main():
 
       plt.grid(False)
       plt.tight_layout()
-      fig.savefig(os.path.join(output_dir, 'urban_first_replacement_map.png'), dpi=200)
+      fig.savefig(os.path.join(output_dir, 'urban_expension_map.png'), dpi=200)
       plt.close(fig)
 
 
