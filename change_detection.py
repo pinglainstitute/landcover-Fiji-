@@ -111,7 +111,7 @@ def save_palette_legend(path: str) -> None:
 
 def main():
   start_year = 2013
-  end_year = 2023
+  end_year = 2024
   labels_dir = os.path.join("results", "vector_files")
   file_pattern = "classified_{year}.npy"
   output_dir = os.path.join("results", "change_analysis")

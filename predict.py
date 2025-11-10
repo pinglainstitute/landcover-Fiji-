@@ -41,7 +41,7 @@ def predict_land_cover(feature_arr, extent, year):
 
 
 if __name__ == "__main__":
-    for i in range(2013,2024):
+    for i in range(2013,2025):
         year = str(i)
         feature_arr, extent = load('/data/'+year+'_original.tif')
 
