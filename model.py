@@ -1,9 +1,8 @@
 import tensorflow as tf
+from sklearn.ensemble import RandomForestClassifier
 
 def create_cnn_model(input_shape):
     """
-    Creates, compiles, and returns a CNN model for land cover classification.
-
     Args:
         input_shape (tuple): The shape of the input data (e.g., (1, 1, n_bands)).
         num_classes (int): The number of output classes.
@@ -37,3 +36,56 @@ def create_cnn_model(input_shape):
     print("Model created and compiled successfully.")
     model.summary()
     return model
+
+
+
+def create_ann_model(input_shape):
+    """
+    Args:
+        input_shape: Tuple like (H, W, C) or (features,).
+        num_classes: Number of target classes.
+        hidden_units: Tuple of Dense layer sizes.
+        dropout: Dropout rate applied after hidden layers.
+        learning_rate: Optimizer learning rate.
+
+    Returns:
+        tf.keras.Model
+    """
+    model = tf.keras.models.Sequential()
+
+    model.add(tf.keras.layers.Flatten(input_shape=input_shape))
+
+    model.add(tf.keras.layers.Dense(32, activation='relu'))
+
+    model.add(tf.keras.layers.Dense(7, activation='softmax'))
+
+    model.compile(
+        loss='sparse_categorical_crossentropy',
+        optimizer='adam',
+        metrics=['accuracy']
+        )
+
+    print("ANN model created and compiled successfully.")
+    model.summary()
+    return model
+
+
+
+def create_rf_model():
+    """
+    Args:
+        n_estimators: Number of trees.
+        max_depth: Max depth of each tree.
+        random_state: RNG seed.
+        n_jobs: Parallel jobs (-1 uses all cores).
+        class_weight: Dict or 'balanced' for imbalanced data.
+
+    Returns:
+        sklearn.ensemble.RandomForestClassifier
+    """
+    rf = RandomForestClassifier(n_estimators=100,
+                                min_samples_leaf= 3,
+                                random_state=42
+                                )
+
+    return rf
