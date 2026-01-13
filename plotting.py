@@ -27,12 +27,13 @@ def plot_confusion_matrix(y_true, y_pred, class_names, save_path):
         annot=True,
         fmt='d',
         cmap='Blues',
+        annot_kws={"size": 15},
         xticklabels=class_names,
         yticklabels=class_names
     )
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.title('Confusion Matrix')
+    plt.xlabel('Predicted Label', fontsize = 15)
+    plt.ylabel('True Label', fontsize = 15)
+    plt.tick_params(axis='both', which='major', labelsize=15, rotation=45)
     plt.savefig(save_path)
     plt.show()
 
@@ -50,14 +51,16 @@ def plot_roc_curves(y_true, y_pred_probs, class_names, save_path):
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curves')
+    plt.xlabel('False Positive Rate', fontsize = 15)
+    plt.ylabel('True Positive Rate', fontsize = 15)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
+    # plt.title('Receiver Operating Characteristic (ROC) Curves')
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.savefig(save_path)
     plt.show()
-    
+
     macro_roc_auc = roc_auc_score(y_true, y_pred_probs, average='macro', multi_class='ovr')
     print(f"Macro-average ROC AUC score: {macro_roc_auc:.4f}")
 
